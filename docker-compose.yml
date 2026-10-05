@@ -1,0 +1,10 @@
+services:
+  course:
+    build: .
+    image: practical-ml-course:1.0
+    ports:
+      # "127.0.0.1:" makes the notebook server reachable ONLY from your own computer, so no password is needed
+      - "127.0.0.1:8888:8888"
+    volumes:
+      # the whole project folder is shared with the container: what you write in a notebook is saved here
+      - .:/course

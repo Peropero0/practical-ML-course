@@ -1,0 +1,5 @@
+# The notebooks, READMEs and the two index files are generated from _tools/content by _tools/build.py
+*.ipynb linguist-generated=true
+module_*/README.md linguist-generated=true
+PITFALLS_INDEX.md linguist-generated=true
+INTERVIEW_QUESTIONS.md linguist-generated=true
