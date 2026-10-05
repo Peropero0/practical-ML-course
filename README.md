@@ -1,8 +1,6 @@
 # Practical classical ML
 
 
-## Why?
-
 While preparing for senior-level job interviews, I wanted to refresh and sharpen my knowledge of classical machine learning.
 
 I started by creating a small learning artifact with the help of Claude, based on my own experience and the topics I wanted to revisit. I then used it as a starting point for my own study: I reviewed the material, expanded it where needed, and corrected mistakes, inaccuracies, and missing details along the way.
@@ -20,7 +18,9 @@ If you find it useful and would like to support the project, you can support its
 
 ## About the course
 
-A hands-on course in classical machine learning with Python, scikit-learn and XGBoost. Here you don't just learn the theory: you apply it, break it and measure it.
+The whole course is built around real-world ML cases and deep dives: leakage that inflates a score, a metric that hides a bad model, a default
+that quietly does the wrong thing, a validation that does not look like production, an importance that points at noise. These are the situations
+that senior-level interviews probe and that you meet at work, so almost every exercise doubles as interview material.
 
 Every module has short lessons with runnable code and a block of exercises with a dataset, a goal, automatic checks,
 a commented solution and a "didactic purpose". The exercises come in six types, with at least two non-trivial exercises per type in
@@ -32,8 +32,9 @@ module 10): 86 of the 145 exercises, about 60 hours. The level ●●● exercis
 Every module README lists its prerequisites.
 
 **Where to start:** do the installation below (about 10 minutes, once), then open `ML_course/module_00_start_here/00_start_here.ipynb`
-(it checks the environment and the datasets and lets you try a check), then the README of module 1. Two files for review:
-`PITFALLS_INDEX.md` (the typical mistake of each exercise) and `INTERVIEW_QUESTIONS.md` (one question with an answer per exercise).
+(it checks the environment and the datasets and lets you try a check), then the README of module 1. Two files for review and
+interview preparation, described in the next section: `PITFALLS_INDEX.md` and `INTERVIEW_QUESTIONS.md`.
+
 
 | Type | What you do |
 |---|---|
@@ -62,9 +63,17 @@ Every module README lists its prerequisites.
 | [09](ML_course/module_09_xgboost/README.md) | Gradient boosting and XGBoost | 3 | 15 | 13 |
 | [10](ML_course/module_10_projects/README.md) | Final projects (credit scoring, prices with spatial validation, reviewing a notebook) | 2 | 3 | 5 |
 
+
 **Recommended order:** 0 → 1 → 2 → 3 are the foundation (environment, data, preprocessing, validation) and should be done first and in order.
 Modules 4-9 are the models and lean on 2 and 3; module 4 (logistic regression) is needed by anyone tackling 5-9 because it
 introduces the classification metrics, the threshold and the calibration. Module 10 requires everything else.
+
+**Interview preparation**: two files cut across all the modules and are meant for interview preparation: every exercise of every module contributes one entry to each of them.
+
+| File | Topic | Entries | Use it for |
+|---|---|---|---|
+| [`INTERVIEW_QUESTIONS.md`](INTERVIEW_QUESTIONS.md) | One interview question with a model answer per exercise, grouped by module | 145 | Practising answers out loud before an interview |
+| [`PITFALLS_INDEX.md`](PITFALLS_INDEX.md) | The typical real-world mistake of each exercise, with a link to the solution that shows it | 145 | A checklist of what can go wrong, and deep dives on demand |
 
 
 ## How to use the course
