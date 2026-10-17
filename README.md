@@ -49,7 +49,7 @@ interview preparation, described in the next section: `PITFALLS_INDEX.md` and `I
 
 ## The modules
 
-30 lessons and 145 exercises (each with its commented solution), for about 110 hours of exercises plus the lessons (the time is the author's estimate per exercise, not measured on a student).
+31 lessons and 145 exercises (each with its commented solution), for about 110 hours of exercises plus the lessons (the time is the author's estimate per exercise, not measured on a student).
 
 | Module | Topic | Lessons | Exercises | Hours |
 |---|---|---|---|---|
@@ -57,7 +57,7 @@ interview preparation, described in the next section: `PITFALLS_INDEX.md` and `I
 | [01](ML_course/module_01_linear_regression/README.md) | Linear regression (with Ridge, Lasso, polynomials) | 4 | 19 | 12 |
 | [02](ML_course/module_02_preprocessing/README.md) | Preprocessing: scaling, encoding of categoricals, missing data | 3 | 16 | 11 |
 | [03](ML_course/module_03_pipeline_and_validation/README.md) | Pipelines, cross-validation and hyperparameter search | 3 | 16 | 11 |
-| [04](ML_course/module_04_logistic_regression/README.md) | Logistic regression and classification metrics | 3 | 16 | 12 |
+| [04](ML_course/module_04_logistic_regression/README.md) | Logistic regression and classification metrics | 4 | 16 | 12 |
 | [05](ML_course/module_05_knn/README.md) | K-nearest neighbors | 3 | 15 | 12 |
 | [06](ML_course/module_06_pca/README.md) | PCA: principal component analysis | 3 | 15 | 12 |
 | [07](ML_course/module_07_decision_trees/README.md) | Decision trees | 3 | 15 | 12 |

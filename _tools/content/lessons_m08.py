@@ -191,7 +191,7 @@ def lesson_8_3() -> List[Cell]:
         - The costs: model size and latency.
         """),
         _setup("""
-        from sklearn.calibration import CalibratedClassifierCV
+        from sklearn.calibration import CalibratedClassifierCV, calibration_curve
         from sklearn.datasets import make_classification
         from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
         from sklearn.linear_model import LogisticRegression
@@ -202,22 +202,37 @@ def lesson_8_3() -> List[Cell]:
         M("""
         ## Probabilities of a forest
 
-        `predict_proba` is the average of the leaf fractions of the trees. With deep trees and almost pure leaves the probabilities are extreme in a single tree, but the **average** softens them: a forest gives reasonable probabilities, but they tend to be **underconfident** at the margins (rarely 0 or 1) and not calibrated.
-        Post-hoc calibration (`CalibratedClassifierCV`) corrects them.
+        `predict_proba` is the average of the leaf fractions of the trees. With deep trees and almost pure leaves the probabilities are extreme in a single tree, but the **average** softens them: a forest gives reasonable probabilities, but they are not calibrated. On this dataset they are **underconfident** at the ends (they rarely get close to 0 or 1), as the reliability curve below shows.
+        The direction depends on the data: on the noisy loans of lesson 4.4 the same model was overconfident. That is why you look at the curve instead of assuming (lesson 4.4 explains how to read it and how `CalibratedClassifierCV` recalibrates).
         """),
         C("""
         X, y = make_classification(6000, n_features=12, n_informative=5, n_redundant=2, class_sep=0.7, flip_y=0.08, random_state=1)
         X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.5, random_state=0)
+        forest = lambda: RandomForestClassifier(300, min_samples_leaf=3, random_state=0, n_jobs=-1)
         models = {
             "logistic": LogisticRegression(max_iter=1000),
-            "forest": RandomForestClassifier(300, min_samples_leaf=3, random_state=0, n_jobs=-1),
-            "calibrated forest": CalibratedClassifierCV(RandomForestClassifier(300, min_samples_leaf=3, random_state=0, n_jobs=-1), method="isotonic", cv=3),
+            "forest": forest(),
+            "forest + sigmoid": CalibratedClassifierCV(forest(), method="sigmoid", cv=3),
+            "forest + isotonic": CalibratedClassifierCV(forest(), method="isotonic", cv=3),
         }
+        probs = {}
         for name, m in models.items():
-            p = m.fit(X_tr, y_tr).predict_proba(X_te)[:, 1]
-            print(f"{name:18s} AUC {roc_auc_score(y_te, p):.3f} | Brier {brier_score_loss(y_te, p):.4f} | log-loss {log_loss(y_te, p):.3f}")
+            probs[name] = m.fit(X_tr, y_tr).predict_proba(X_te)[:, 1]
+            print(f"{name:18s} AUC {roc_auc_score(y_te, probs[name]):.3f} | Brier {brier_score_loss(y_te, probs[name]):.4f} | log-loss {log_loss(y_te, probs[name]):.3f}")
+        """),
+        C("""
+        fig, ax = plt.subplots(figsize=(5.5, 5))
+        for name in ["forest", "forest + sigmoid", "forest + isotonic"]:
+            freq, mean = calibration_curve(y_te, probs[name], n_bins=8, strategy="quantile")
+            ax.plot(mean, freq, "o-", label=name)
+        ax.plot([0, 1], [0, 1], "k:", label="perfect")
+        ax.set(xlabel="mean predicted probability", ylabel="observed frequency"); ax.legend(); plt.show()
         """),
         M("""
+        The forest beats the logistic on every metric here (AUC 0.919 against 0.784), because the data are not linear. Its curve is S-shaped: where it says 0.08 only 4% are positive, and where it says 0.77, 89% are. The sigmoid straightens it and improves both the Brier score
+        (0.1129 → 0.1097) and the log-loss (0.378 → 0.363). The isotonic improves the Brier score as well (0.1101) but worsens the log-loss (0.385): the same effect seen in lesson 4.4, a staircase that is too extreme at the ends. The gain is modest because this forest was already
+        fairly calibrated, and calibration does not touch the ranking (the AUC stays at 0.92).
+
         ## Regression and limits
 
         `RandomForestRegressor` predicts the average of the leaf means: robust, no scaling, it handles interactions. But it is a **piecewise constant** function and outside the range of the data **it is flat** (like the single tree, M7 C1).
@@ -234,7 +249,7 @@ def lesson_8_3() -> List[Cell]:
             print(f"{name:24s} size {len(pickle.dumps(f)) / 1e6:7.1f} MB | prediction on 5000 examples {tp:.2f} s | test {f.score(Xr[15000:], yr[15000:]):.3f}")
         """),
         M("""
-        > **Common mistake.** Treating the probabilities of a forest as calibrated risks (to compute an expected cost, for example) without checking them: use a calibration curve or `CalibratedClassifierCV` (module 4).
+        > **Common mistake.** Treating the probabilities of a forest as calibrated risks (to compute an expected cost, for example) without checking them: use a calibration curve or `CalibratedClassifierCV` (lesson 4.4).
 
         ## Check your understanding
 

@@ -15,12 +15,15 @@ LESSONS = [
     ("02_regularization_scaling_multiclass.ipynb", "4.2", "Regularization, scaling and multiclass",
      "`C`, L1 and L2 penalties, why scaling changes the model and how to move to more classes."),
     ("03_metrics_and_threshold.ipynb", "4.3", "Metrics, threshold and imbalance",
-     "Confusion matrix, precision and recall, ROC and PR, calibration and choice of the threshold."),
+     "Confusion matrix, precision and recall, ROC and PR, `class_weight` and choice of the threshold."),
+    ("04_calibration.ipynb", "4.4", "Calibration: are the probabilities true?",
+     "Reliability curves and the Brier score, why `class_weight` and forests give probabilities that lie, and how to recalibrate with `CalibratedClassifierCV`."),
 ]
 PATH = [
     ("Lesson 4.1", ["A1", "B1", "C1", "D1", "E2"]),
     ("Lesson 4.2", ["E1", "F1", "D3", "B3"]),
-    ("Lesson 4.3", ["A2", "C2", "D2", "B2", "E3", "F2"]),
+    ("Lesson 4.3", ["A2", "C2", "B2", "E3", "F2"]),
+    ("Lesson 4.4", ["D2"]),
 ]
 
 
@@ -327,14 +330,13 @@ def lesson_4_3() -> List[Cell]:
         M("""
         The dotted line in the PR plot is the precision of chance (the prevalence, about 0.2): it is the baseline to beat. In ROC the baseline is the diagonal.
 
-        ## `class_weight` and calibration
+        ## `class_weight`
 
         `class_weight="balanced"` weighs the errors on the rare class more: it moves the model toward recall, it is almost equivalent to lowering the threshold.
         **But the output probabilities are no longer calibrated**: "0.6" no longer means "6 out of 10 are positive". If you need true probabilities (to
-        compute an expected cost, for example) keep the model without weights and move the threshold, or recalibrate with `CalibratedClassifierCV`.
+        compute an expected cost, for example) keep the model without weights and move the threshold, or recalibrate it (lesson 4.4).
         """),
         C("""
-        from sklearn.calibration import calibration_curve
         balanced = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000, class_weight="balanced")).fit(X_tr, y_tr)
         for name, m in {"no weights": model, "balanced": balanced}.items():
             p = m.predict_proba(X_te)[:, 1]
@@ -357,11 +359,184 @@ def lesson_4_3() -> List[Cell]:
     ]
 
 
+def lesson_4_4() -> List[Cell]:
+    """Cells of lesson 4.4."""
+    return [
+        M("""
+        # Lesson 4.4 · Calibration: are the probabilities true?
+
+        In lesson 4.3 the model returned scores and a threshold turned them into decisions. Sometimes, though, you use the number itself:
+        "this customer has a 30% chance of default" goes into an expected loss, a price or a comparison with another model. Then the number
+        must be **true**: among the loans that receive 30%, about 30 in 100 should default. This property is called **calibration**, and it is
+        independent of how well the model ranks.
+
+        **What you will learn**
+
+        - To tell apart discrimination (AUC) from calibration, and why a good AUC does not guarantee usable probabilities.
+        - To read a **reliability curve** and the **Brier score**.
+        - Which models tend to be calibrated (the plain logistic) and which are not (`class_weight`, a random forest).
+        - To recalibrate with `CalibratedClassifierCV` (sigmoid or isotonic) without leaking.
+        """),
+        _setup("""
+        from sklearn.calibration import CalibratedClassifierCV, calibration_curve
+        from sklearn.ensemble import RandomForestClassifier
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.metrics import brier_score_loss, log_loss, roc_auc_score
+        from sklearn.model_selection import train_test_split
+        from sklearn.pipeline import make_pipeline
+        from sklearn.preprocessing import StandardScaler
+
+        df = ds.loans(n=5000, with_missing=False)
+        df["ratio"] = df["amount"] / df["income"]
+        cols = ["ratio", "age", "job_tenure", "income"]
+        X_tr, X_te, y_tr, y_te = train_test_split(df[cols], df["defaulted"], test_size=0.4, stratify=df["defaulted"], random_state=0)
+        y_te = y_te.to_numpy()
+
+
+        def logistic(**kwargs):
+            return make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000, **kwargs))
+
+
+        models = {"logistic": logistic(), "balanced": logistic(class_weight="balanced"),
+                  "forest": RandomForestClassifier(300, random_state=0, n_jobs=-1)}
+        probs = {name: m.fit(X_tr, y_tr).predict_proba(X_te)[:, 1] for name, m in models.items()}
+        print(f"test set: {len(y_te)} loans, {int(y_te.sum())} defaulters ({y_te.mean():.1%})")
+        """),
+        M("""
+        ## Two different questions
+
+        **Discrimination**: does the model give higher scores to the positives than to the negatives? The AUC answers it, and it depends only on the
+        *order* of the scores. **Calibration**: when the model says $p$, does the event happen with frequency $p$? Two metrics look at the probabilities
+        themselves: the **Brier score**, the mean of $(p - y)^2$ (the squared error of the probability), and the log-loss of lesson 4.1. Both are lower
+        when the probabilities are true. Here are three models: the plain logistic, the one with `class_weight="balanced"` and a random forest.
+        """),
+        C("""
+        def summary(probs):
+            return pd.DataFrame({name: {"AUC": roc_auc_score(y_te, p), "Brier": brier_score_loss(y_te, p), "log-loss": log_loss(y_te, p),
+                                        "mean p": p.mean(), "expected defaulters": p.sum()} for name, p in probs.items()}).T
+
+
+        summary(probs).round(3)
+        """),
+        M("""
+        The two logistic models have the same AUC (0.743 and 0.744) but not the same probabilities. The `balanced` one has a much worse Brier score
+        (0.193 against 0.124) and, adding up its probabilities, it expects 883 defaulters where there are 384: an expected loss computed with it would be
+        more than twice the real one. The forest ranks worse (AUC 0.693), and its probabilities are worse too; its total (417 defaulters) is close to the real
+        one, but that hides a distortion that only the next plot shows.
+
+        ## The reliability curve
+
+        Sort the loans by predicted probability, cut them into groups of equal size and, in each group, compare the **mean predicted probability** with the
+        **observed frequency**. In a calibrated model the two columns are equal. By hand, for the logistic and 6 groups:
+        """),
+        C("""
+        groups = pd.qcut(probs["logistic"], 6, labels=False)           # 6 groups of equal size, from the lowest to the highest predicted risk
+        pd.DataFrame({"predicted": probs["logistic"], "observed": y_te, "group": groups}).groupby("group").mean().round(3)
+        """),
+        M("""
+        The columns are close: each group has about 333 loans, so gaps of a few points are within the noise. `calibration_curve` does the same grouping,
+        and the plot puts the pairs on a plane (predicted on the x axis, observed on the y axis). The dotted diagonal is the perfect calibration.
+        """),
+        C("""
+        fig, ax = plt.subplots(figsize=(5.5, 5))
+        for name in ["logistic", "balanced", "forest"]:
+            freq, mean = calibration_curve(y_te, probs[name], n_bins=6, strategy="quantile")
+            ax.plot(mean, freq, "o-", label=name)
+        ax.plot([0, 1], [0, 1], "k:", label="perfect")
+        ax.set(xlabel="mean predicted probability", ylabel="observed frequency"); ax.legend(); plt.show()
+        """),
+        M("""
+        - **logistic**: on the diagonal. The logistic regression minimizes the log-loss, which rewards true probabilities, so it is calibrated almost by construction.
+        - **balanced**: the same shape, shifted below the diagonal. In the lowest group it says 0.22 where 8% default, in the highest 0.82 where 52% default. It overestimates
+          everywhere because the weights make a positive count about four times more.
+        - **forest**: it crosses the diagonal. In the lowest group it says 0.02 where 12% default, in the highest 0.63 where 45% default: too extreme at both ends. The trees are deep,
+          their leaves are almost pure and each tree is too sure of itself. On other datasets a forest can bend the other way: that is why you look at the curve and do not assume.
+
+        ## Recalibrating with `CalibratedClassifierCV`
+
+        A calibrator learns an increasing map from the score of the model to a probability, using predictions on data the model **did not train on**.
+        `CalibratedClassifierCV(model, method=..., cv=3)` does it for you: for each fold it trains the model on the rest, learns the map on the held-out fold, and
+        at the end predicts with the average of the 3 pairs (model + map). There are two kinds of map:
+
+        - `method="sigmoid"` (Platt): two parameters, an S-shaped curve. It is stable with little data, but it can only correct S-shaped distortions.
+        - `method="isotonic"`: a free-form increasing staircase. It can fix any monotone distortion, but it needs more data (a common rule of thumb is more than 1,000 calibration examples) and it can overfit.
+
+        Because the map is increasing, it does not change the order of the scores: the ranking stays (almost) the same.
+        """),
+        C("""
+        calibrated = {
+            "forest + sigmoid": CalibratedClassifierCV(RandomForestClassifier(300, random_state=0, n_jobs=-1), method="sigmoid", cv=3),
+            "forest + isotonic": CalibratedClassifierCV(RandomForestClassifier(300, random_state=0, n_jobs=-1), method="isotonic", cv=3),
+            "balanced + isotonic": CalibratedClassifierCV(logistic(class_weight="balanced"), method="isotonic", cv=3),
+        }
+        for name, m in calibrated.items():
+            probs[name] = m.fit(X_tr, y_tr).predict_proba(X_te)[:, 1]
+        summary(probs).round(3)
+        """),
+        C("""
+        fig, ax = plt.subplots(1, 2, figsize=(10, 4.5), sharey=True)
+        for a, names in zip(ax, [["forest", "forest + sigmoid", "forest + isotonic"], ["balanced", "balanced + isotonic", "logistic"]]):
+            for name in names:
+                freq, mean = calibration_curve(y_te, probs[name], n_bins=6, strategy="quantile")
+                a.plot(mean, freq, "o-", label=name)
+            a.plot([0, 1], [0, 1], "k:"); a.set(xlabel="mean predicted probability"); a.legend()
+        ax[0].set_ylabel("observed frequency"); plt.tight_layout(); plt.show()
+        """),
+        M("""
+        - `balanced + isotonic` is back to the quality of the plain logistic: Brier 0.124 for both, 404 expected defaulters against 403, the same AUC. The weights had distorted the probabilities and not the ranking, so
+          an increasing map can undo the damage (and, if you need probabilities, you did not need the weights in the first place).
+        - The forest improves (Brier 0.137 → 0.128 with the sigmoid, log-loss 0.476 → 0.420) but does not reach the logistic: **calibration repairs the probabilities, not the ranking**, and the forest ranks worse
+          (AUC 0.69-0.71 against 0.74). Its AUC moves a little because the calibrated model is the average of three forests, each trained on two thirds of the data.
+        - Isotonic has the same Brier as the sigmoid but a worse log-loss (0.453 against 0.420). The staircase is extreme at the ends: 31 loans get a probability above 0.99 and 2 of them do not default, and for the
+          log-loss saying 100% about something that does not happen is a huge loss. More freedom is not always better.
+
+        ## Calibrate on data the model has not seen
+
+        The map must be learned on predictions the model did not train on. A forest predicts its own training set almost perfectly, so its training scores say nothing about how it behaves on new loans.
+        That is why `CalibratedClassifierCV` uses `cv` (or you keep a separate calibration set). See what happens if you calibrate with the training data:
+        """),
+        C("""
+        forest = models["forest"]
+        print(f"forest, Brier on the training set: {brier_score_loss(y_tr, forest.predict_proba(X_tr)[:, 1]):.3f} | on the test set: {brier_score_loss(y_te, probs['forest']):.3f}")
+        wrong = CalibratedClassifierCV(forest, method="isotonic", cv="prefit").fit(X_tr, y_tr)         # the map is learned on the data the forest was trained on
+        print(f"test Brier of the forest | not calibrated: {brier_score_loss(y_te, probs['forest']):.3f} | calibrated on the training set: "
+              f"{brier_score_loss(y_te, wrong.predict_proba(X_te)[:, 1]):.3f} | calibrated with cv=3: {brier_score_loss(y_te, probs['forest + isotonic']):.3f}")
+        """),
+        M("""
+        Calibrating on the training set makes the forest **worse than not calibrating it**: the map learned that the extreme scores are always right, which is only true on the data the trees memorized.
+
+        ## When it matters
+
+        - **You need calibration** when the number itself is used: an expected loss or profit (sum of probability times cost), a price, a threshold derived from the costs (exercise B2 of this module), the combination of
+          several models, a risk shown to a person.
+        - **You do not need it** when only the ranking matters (the 100 cases to review today, the AUC) or when the threshold is chosen on validation data: an increasing map moves the scores but not the order, so the
+          same cases end up above the best threshold.
+        - **It does not last forever**: if the base rate changes in production (another period, another market) a calibrated model stops being calibrated. Check it again with the reliability curve.
+
+        > **Common mistake.** Reading the output of a model as a probability without checking it. `class_weight`, oversampling and many tree ensembles give scores that rank well and lie. And the twin mistake: calibrating (or judging the
+        > calibration) on the same data the model was trained on. The calibration is measured on the test set, with a map learned on data the model had not seen (exercise D2).
+
+        ## Check your understanding
+
+        """ + details(
+            "Two models have the same AUC. Can I use either one to compute the expected loss of a portfolio?",
+            "No. The AUC only looks at the order of the scores, while the expected loss adds up probabilities: they must be calibrated. Compare the Brier score or the log-loss and look at the reliability curve. "
+            "Here the `balanced` logistic has the same AUC as the plain one but expects 883 defaulters where there are 384.") + "\n\n" + details(
+            "Why does `CalibratedClassifierCV` train the model on some folds and learn the map on the others?",
+            "Because a flexible model is too sure of itself on the data it was trained on (a forest almost never gets its own training examples wrong), so a map learned there would conclude that the extreme scores are always right. "
+            "The map must be learned on predictions the model has not seen, as the cell with `cv=\"prefit\"` shows.") + "\n\n" + details(
+            "Sigmoid or isotonic?",
+            "The sigmoid has two parameters: it is more stable with little data (hundreds of examples) and when the distortion is S-shaped. The isotonic corrects any increasing shape but needs more data and can overfit, "
+            "with extreme probabilities at the ends. Choose by comparing the Brier score and the log-loss in cross-validation, not by taste.")),
+    ]
+
+
 def build() -> None:
     """Write the lesson notebooks of this module."""
     for name, f in [("01_from_line_to_probability.ipynb", lesson_4_1),
                     ("02_regularization_scaling_multiclass.ipynb", lesson_4_2),
-                    ("03_metrics_and_threshold.ipynb", lesson_4_3)]:
+                    ("03_metrics_and_threshold.ipynb", lesson_4_3),
+                    ("04_calibration.ipynb", lesson_4_4)]:
         build_lesson(MODULE, name, f())
 
 

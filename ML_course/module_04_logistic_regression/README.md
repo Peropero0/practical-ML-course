@@ -1,6 +1,6 @@
 # Module 4 · Logistic regression and classification metrics
 
-3 short lessons and 16 exercises with a commented solution (A: 2, B: 4, C: 2, D: 3, E: 3, F: 2). Estimated time: about 12 hours of exercises plus a couple of hours of lessons.
+4 short lessons and 16 exercises with a commented solution (A: 2, B: 4, C: 2, D: 3, E: 3, F: 2). Estimated time: about 12 hours of exercises plus a couple of hours of lessons.
 
 **Short on time?** Do the **core path**: 9 of the 16 exercises (about 6 hours), marked ★ in the tables below. The others (level ●●●) are the extended path: harder, longer, and best done after the core.
 
@@ -19,7 +19,8 @@
 |---|---|---|
 | 4.1 | [From the line to the probability](lessons/01_from_line_to_probability.ipynb) | Sigmoid, log-odds, log-loss and coefficients as odds ratios: what `LogisticRegression` really does. |
 | 4.2 | [Regularization, scaling and multiclass](lessons/02_regularization_scaling_multiclass.ipynb) | `C`, L1 and L2 penalties, why scaling changes the model and how to move to more classes. |
-| 4.3 | [Metrics, threshold and imbalance](lessons/03_metrics_and_threshold.ipynb) | Confusion matrix, precision and recall, ROC and PR, calibration and choice of the threshold. |
+| 4.3 | [Metrics, threshold and imbalance](lessons/03_metrics_and_threshold.ipynb) | Confusion matrix, precision and recall, ROC and PR, `class_weight` and choice of the threshold. |
+| 4.4 | [Calibration: are the probabilities true?](lessons/04_calibration.ipynb) | Reliability curves and the Brier score, why `class_weight` and forests give probabilities that lie, and how to recalibrate with `CalibratedClassifierCV`. |
 
 ## List of exercises
 
@@ -89,4 +90,5 @@ The order of the types (A-F) is not the order in which it makes sense to do them
 
 - **Lesson 4.1** → [R4](exercises/B_with_sklearn/R4_warmup_the_first_logistic_and_the_threshold.ipynb), [A1](exercises/A_from_scratch/A1_logistic_with_gradient_descent.ipynb), [B1](exercises/B_with_sklearn/B1_loans_pipeline_and_ablation.ipynb), [C1](exercises/C_break_the_model/C1_perfect_separation_and_extreme_probabilities.ipynb), [D1](exercises/D_interpret/D1_coefficients_odds_ratios_and_omitted_variables.ipynb), [E2](exercises/E_find_the_bug/E2_predict_proba_columns_and_classes.ipynb)
 - **Lesson 4.2** → [E1](exercises/E_find_the_bug/E1_regularization_without_scaling.ipynb), [F1](exercises/F_compare/F1_none_l2_l1_elasticnet.ipynb), [D3](exercises/D_interpret/D3_multiclass_metrics_with_rare_classes.ipynb), [B3](exercises/B_with_sklearn/B3_multiclass_digits_and_choice_of_c.ipynb)
-- **Lesson 4.3** → [A2](exercises/A_from_scratch/A2_metrics_and_roc_curve_from_scratch.ipynb), [C2](exercises/C_break_the_model/C2_prevalence_and_precision.ipynb), [D2](exercises/D_interpret/D2_calibration_of_five_models.ipynb), [B2](exercises/B_with_sklearn/B2_optimal_threshold_with_costs.ipynb), [E3](exercises/E_find_the_bug/E3_oversampling_before_the_split.ipynb), [F2](exercises/F_compare/F2_strategies_for_rare_classes.ipynb)
+- **Lesson 4.3** → [A2](exercises/A_from_scratch/A2_metrics_and_roc_curve_from_scratch.ipynb), [C2](exercises/C_break_the_model/C2_prevalence_and_precision.ipynb), [B2](exercises/B_with_sklearn/B2_optimal_threshold_with_costs.ipynb), [E3](exercises/E_find_the_bug/E3_oversampling_before_the_split.ipynb), [F2](exercises/F_compare/F2_strategies_for_rare_classes.ipynb)
+- **Lesson 4.4** → [D2](exercises/D_interpret/D2_calibration_of_five_models.ipynb)
