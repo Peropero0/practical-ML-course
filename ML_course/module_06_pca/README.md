@@ -19,7 +19,7 @@
 |---|---|---|
 | 6.1 | [The principal components](lessons/01_principal_components.ipynb) | Directions of maximum variance, SVD, scores and reconstruction: what `PCA` really computes. |
 | 6.2 | [How many components to keep](lessons/02_how_many_components.ipynb) | Scree plot, cumulative explained variance, choice with cross-validation and reconstruction error. |
-| 6.3 | [PCA in practice](lessons/03_pca_in_practice.ipynb) | Inside a pipeline, to visualize, to remove noise, and its limits (units of measure, outliers, nonlinearity). |
+| 6.3 | [PCA in practice](lessons/03_pca_in_practice.ipynb) | Inside a pipeline, to visualize, to remove noise, and its limits (nonlinearity, signal in low-variance directions). |
 
 ## List of exercises
 

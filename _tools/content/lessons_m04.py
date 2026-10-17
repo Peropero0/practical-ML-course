@@ -81,7 +81,7 @@ def lesson_4_1() -> List[Cell]:
         print("the line predicts values outside [0, 1]:", (lin.predict(x) < 0).sum(), "rows below 0,", (lin.predict(x) > 1).sum(), "above 1")
         """),
         M("""
-        The line produces negative "probabilities" and has no probabilistic interpretation. Logistic regression applies to the linear model a
+        The line produces "probabilities" outside [0, 1] (here 11 loans get more than 1) and has no probabilistic interpretation. Logistic regression applies to the linear model a
         function that squashes every real number into (0, 1): the **sigmoid** $\\sigma(z) = 1/(1+e^{-z})$.
 
         $$P(y=1\\mid x) = \\sigma(w_0 + w_1 x_1 + \\dots + w_p x_p)$$

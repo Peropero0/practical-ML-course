@@ -149,7 +149,7 @@ def lesson_5_2() -> List[Cell]:
         M("""
         ## The scale decides who counts
 
-        The Euclidean distance sums the squares of the differences. In the wine dataset `proline` has a standard deviation of about 315, the second (`magnesium`) 14 and all the others 3 or less: in the distance
+        The Euclidean distance sums the squares of the differences. In the wine dataset `proline` has a standard deviation of about 315, the second (`magnesium`) 14 and all the others about 3 or less: in the distance
         `proline` does almost **everything** and the other 12 columns weigh very little.
         """),
         C("""
@@ -184,7 +184,7 @@ def lesson_5_2() -> List[Cell]:
         pd.DataFrame(rows).round(3).set_index("noise columns").T
         """),
         M("""
-        The two useful dimensions do not change, but every noise column adds a random term to the squared distance: the "true" neighbors are covered by the accumulated random distance. With 100 useless columns the accuracy is close to chance.
+        The two useful dimensions do not change, but every noise column adds a random term to the squared distance: the "true" neighbors are covered by the accumulated random distance. With 100 useless columns the accuracy falls from 0.93 to 0.57, little better than chance (0.5).
         It is the **curse of dimensionality**: in many dimensions the distances between points concentrate (the nearest neighbor is almost as far as the farthest) and "near" loses meaning.
 
         > **Common mistake.** Adding all the available features "because maybe they help". With distance-based models every useless feature has a cost; feature selection (or a PCA, module 6) is part of the model.

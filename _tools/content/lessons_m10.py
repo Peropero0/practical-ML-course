@@ -212,7 +212,7 @@ def lesson_10_2() -> List[Cell]:
         - **Validation flat and training much higher**: overfitting; you need regularization or a simpler model.
         - **The two curves close together and low**: underfitting; you need better features or a more capable model.
 
-        Here the validation climbs slowly (from 0.74 with 120 examples to 0.79 with 1200) while the training stays at 0.98: the gap of 0.2 is typical of a deep forest that memorizes the training set, and doubling the examples would give a few thousandths. You need better features or regularization (`min_samples_leaf`), not fine tuning.
+        Here the validation climbs slowly (from 0.74 with 120 examples to 0.78 with 1200) while the training stays at 0.98: the gap of 0.2 is typical of a deep forest that memorizes the training set, and doubling the examples would give a few thousandths. You need better features or regularization (`min_samples_leaf`), not fine tuning.
 
         ## Check 3 · the validation must look like the real use
 

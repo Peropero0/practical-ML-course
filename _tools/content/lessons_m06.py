@@ -15,7 +15,7 @@ LESSONS = [
     ("02_how_many_components.ipynb", "6.2", "How many components to keep",
      "Scree plot, cumulative explained variance, choice with cross-validation and reconstruction error."),
     ("03_pca_in_practice.ipynb", "6.3", "PCA in practice",
-     "Inside a pipeline, to visualize, to remove noise, and its limits (units of measure, outliers, nonlinearity)."),
+     "Inside a pipeline, to visualize, to remove noise, and its limits (nonlinearity, signal in low-variance directions)."),
 ]
 PATH = [
     ("Lesson 6.1", ["A1", "D1", "E3", "C2"]),
@@ -207,13 +207,13 @@ def lesson_6_3() -> List[Cell]:
         M("""
         # Lesson 6.3 · PCA in practice
 
-        Four typical uses, and three situations in which PCA misleads.
+        Three typical uses, and the situations in which PCA misleads.
 
         **What you will learn**
 
         - PCA inside a `Pipeline` (for a KNN, for a regression).
         - PCA to **visualize** and to **remove noise**.
-        - The limits: units of measure, outliers, nonlinear structure, informative low-variance components.
+        - The limits: nonlinear structure and informative low-variance components (the units of measure were in lesson 6.1).
         """),
         _setup("""
         from sklearn.datasets import load_digits, make_circles
