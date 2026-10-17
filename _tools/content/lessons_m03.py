@@ -256,8 +256,9 @@ def lesson_3_2() -> List[Cell]:
             "validation says that the model memorizes. It costs a bit more computation time, which is why it is off by default.") + "\n\n" + details(
             "I have 5 folds and I get 5 scores. What is the standard error of my estimate?",
             "It is not the standard deviation divided by the square root of 5: the folds are not independent (they share training data). The "
-            "standard deviation across folds is an indicator of stability, not a confidence interval; for a more "
-            "reliable estimate you use repeated cross-validation.")),
+            "standard deviation across folds is an indicator of stability, not a confidence interval. Repeating the cross-validation with different "
+            "splits reduces the noise due to the random partition, but the repetitions still use the same data, so it does not turn that spread into a valid "
+            "confidence interval (corrected estimators exist, such as Nadeau and Bengio's). To compare two models, use the same folds and look at the differences fold by fold.")),
     ]
 
 

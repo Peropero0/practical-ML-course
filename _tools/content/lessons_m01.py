@@ -451,6 +451,9 @@ def lesson_1_4() -> List[Cell]:
         Lasso:  minimizes  Σ (y − ŷ)² + α · Σ |βⱼ|
         ```
 
+        These are the textbook forms. scikit-learn writes the Lasso objective as 1/(2n) · Σ (y − ŷ)² + α · Σ |βⱼ|, dividing the squared error by 2n (Ridge does not divide), so the same `alpha`
+        means different things in the two models: an α chosen for the Lasso cannot be reused for the Ridge.
+
         > **Common mistake.** The penalty hits the numeric value of the coefficients, which depends on the unit of measure of the
         > feature. Without `StandardScaler` the regularization punishes the features based on how you measured them, not on how much they
         > matter. The scaler goes **inside** the pipeline, so it is fitted only on the training fold.

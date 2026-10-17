@@ -40,7 +40,7 @@ def lesson_4_1() -> List[Cell]:
 
         In module 1 you predicted a number with a line. Now the target is a **class** (default yes/no) and you want a
         **probability**. Logistic regression is the linear model that answers this question: it is the baseline of almost every
-        classification problem, and it is also the only model that will give you, besides the prediction, interpretable coefficients.
+        classification problem, and, like linear regression, it gives you interpretable coefficients besides the prediction.
 
         **What you will learn**
 

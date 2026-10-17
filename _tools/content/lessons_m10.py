@@ -107,6 +107,8 @@ def lesson_10_1() -> List[Cell]:
         The accuracy of the model (about 0.85) is only slightly above that of the baseline (0.80): looking only at that you would say the model "is not needed". The **AUC** (0.82 against 0.50) says the opposite: the model ranks people well by risk, even if at threshold 0.5 it does not change
         many decisions. With imbalanced classes the right metric is almost always probabilistic or a ranking one, then the threshold is chosen with the costs (step 8).
 
+        The example runs steps 2 to 5, 7 and 8. Tuning (step 6) is practised in exercise C3 of module 3 and exercise B3 of module 9, and the whole flow, explanation and report (step 9) included, in project P1.
+
         ## Steps 7-8: final check and decision
 
         Only after choosing **one** model do you open the test set, once. The threshold is chosen with the **out-of-sample predictions on the training set** (`cross_val_predict`), not on the test.
@@ -124,7 +126,20 @@ def lesson_10_1() -> List[Cell]:
         print(f"AUC on the test (only once): {roc_auc_score(y_te, p_te):.3f} | threshold chosen on the training set: {threshold:.2f}")
         print(f"cost on the test: threshold 0.5 -> {cost(y_te.to_numpy(), p_te, 0.5)} | threshold {threshold:.2f} -> {cost(y_te.to_numpy(), p_te, threshold)} | refuse everyone -> {int((y_te == 0).sum())}")
         """),
+        C("""
+        rng = np.random.default_rng(0)
+        y_arr = y_te.to_numpy()
+        boot = []
+        for _ in range(1000):
+            i = rng.integers(0, len(y_arr), len(y_arr))                    # resample the test rows with replacement
+            boot.append(roc_auc_score(y_arr[i], p_te[i]))
+        low, high = np.percentile(boot, [2.5, 97.5])
+        print(f"AUC on the test: {roc_auc_score(y_te, p_te):.3f} | 95% interval (bootstrap of the test rows): [{low:.3f}, {high:.3f}]")
+        """),
         M("""
+        A single number hides the uncertainty: with 500 test rows the AUC of 0.795 has a 95% interval of about plus or minus 0.05. The cross-validation estimate (0.82) is inside it, so the model did not get worse on the test set,
+        and a difference of a couple of hundredths between two models would not be a real difference. This interval only reflects the finite size of the test set, not the variability due to the training.
+
         > **Common mistake.** Choosing the threshold (or the model, or the hyperparameters) by looking at the test set "just to see". From that moment the test set has become a validation set, and the number you report is optimistic without any warning stopping you.
 
         ## Check your understanding
