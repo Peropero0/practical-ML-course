@@ -128,7 +128,7 @@ B2 = dict(
         `ds.loans(n=3000)` with missing values in `age`, `income`, `job_tenure` (the missingness of `income` is more frequent among defaulters). Features: `ratio` (amount/income, NaN where income is missing), `age`, `income`, `job_tenure`, `amount`. Validation `RepeatedStratifiedKFold(5, n_repeats=4, random_state=0)`, AUC.
     """,
     purpose="""
-        Understand how XGBoost "uses" NaN (the default direction of each split) and how much it matters compared with the standard step of imputation + indicator of module 4. See that the difference is modest but systematic, and that the estimate has an uncertainty to compute.
+        Understand how XGBoost "uses" NaN (the default direction of each split) and how much it matters compared with the standard step of imputation + indicator (lesson 2.3, used in exercise B1 of module 4). See that the difference is modest but systematic, and that the estimate has an uncertainty to compute.
     """,
     task=[
         "Build `models` (dictionary name → `Pipeline` or estimator): `xgb native` (`XGBClassifier` directly, without imputation), `xgb median` (`SimpleImputer(strategy=\"median\")` + XGB), `xgb median+indicators` (`SimpleImputer(strategy=\"median\", add_indicator=True)` + XGB), `rf median+indicators` (same imputer + `RandomForestClassifier(200, min_samples_leaf=5)`). "

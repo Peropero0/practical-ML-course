@@ -198,7 +198,7 @@ A2 = dict(
         deliberately far apart.
     """,
     purpose="""
-        Connect three things that in the theory course sit in separate lessons: the OLS cost function, its gradient and
+        Connect three things that textbooks usually present separately: the OLS cost function, its gradient and
         convexity. You will see that the scale of the features decides **how large the learning rate can be**, not just the speed of
         convergence.
     """,

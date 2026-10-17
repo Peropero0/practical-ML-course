@@ -41,7 +41,7 @@ def lesson_1_1() -> List[Cell]:
         M("""
         # Lesson 1.1 · Linear regression: the idea and least squares
 
-        This lesson turns lesson 4.1 of the theory course into code. We don't rederive the theory: we look at what the model
+        This lesson is about the code, not the derivation. We don't rederive the theory: we look at what the model
         really does when you run it, and we build the tools you will use in the exercises.
 
         **What you will learn**

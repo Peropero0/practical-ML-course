@@ -221,7 +221,7 @@ def lesson_9_3() -> List[Cell]:
         M("""
         ## Native missing values
 
-        At every split XGBoost learns **which way to send the NaN** (left or right) by choosing the direction that reduces the loss the most: missingness becomes information, like the missingness indicator of module 4 but without having to build it. You do not need an imputer (exercise B2).
+        At every split XGBoost learns **which way to send the NaN** (left or right) by choosing the direction that reduces the loss the most: missingness becomes information, like the missingness indicator of lesson 2.3 but without having to build it. You do not need an imputer (exercise B2).
 
         ## Per-example contributions
 

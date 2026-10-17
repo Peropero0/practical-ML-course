@@ -148,8 +148,8 @@ def lesson_4_2() -> List[Cell]:
         # Lesson 4.2 · Regularization, scaling and multiclass
 
         scikit-learn's `LogisticRegression` is **regularized by default**: what it hands over is not the minimum of the log-loss but the minimum of the
-        log-loss plus a penalty on the size of the coefficients. This changes three things that the module 1 theory had already given you for
-        linear regression and that carry over here.
+        log-loss plus a penalty on the size of the coefficients. It is the idea you met with Ridge and Lasso in lesson 1.4 (the penalty, the need to
+        scale the features, the choice of its strength in cross-validation), with some differences that this lesson shows.
 
         **What you will learn**
 

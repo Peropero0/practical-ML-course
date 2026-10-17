@@ -53,7 +53,7 @@ def lesson_10_1() -> List[Cell]:
         | 4 | **Pipeline** | Imputation, scaling, encoding **inside** the pipeline, fitted only on the training part of each fold. | Leakage from preprocessing on the whole dataset (M2, M3) |
         | 5 | **Comparison** | Same folds, same metric, with the variability (mean and deviation). | Comparison with a single seed or a single partition (M8 E1) |
         | 6 | **Tuning** | Only on the training set, with nested validation or a separate validation set. | Selection optimism (M3, M9 B3) |
-        | 7 | **Final check** | A single shot on the test set, with an uncertainty interval. | Choosing by looking at the test (M9 E1) |
+        | 7 | **Final check** | A single shot on the test set, with an uncertainty interval. | Choosing by looking at the test (M9 R9) |
         | 8 | **Decision** | Threshold and costs, calibration, prediction intervals. | Threshold 0.5 out of habit (M4 B2) |
         | 9 | **Explanation and report** | Importances on unseen data, single cases, limits and risks. | Importance computed on the training set (M8 E3) |
         """),
