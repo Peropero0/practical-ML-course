@@ -190,8 +190,9 @@ def lesson_2_2() -> List[Cell]:
         almost always what you need in production. `drop="first"` removes one column per category, avoiding redundancy (the
         sum of the columns is always 1, that is equal to the intercept): it is needed only with unregularized linear models.
 
-        > **Version note.** With `drop` other than `None` scikit-learn 1.1 requires `handle_unknown="error"`. In scikit-learn 1.2 or later the
-        > parameter `sparse=False` becomes `sparse_output=False`.
+        > **Version note.** With `drop` other than `None` scikit-learn 1.1 requires `handle_unknown="error"`. In scikit-learn 1.2 the
+        > parameter `sparse=False` is renamed `sparse_output=False`, and in 1.4 the old name is removed: the notebooks of this course use `sparse=False`,
+        > so they need scikit-learn 1.1 to 1.3.
         """),
         M("## Rare categories: `min_frequency`"),
         C("""

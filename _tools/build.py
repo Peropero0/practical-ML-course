@@ -211,7 +211,10 @@ def build_start() -> None:
             if not ok:
                 problems.append(f"upgrade {name}")
         import sklearn
-        if tuple(int(x) for x in re.findall(r"\\d+", sklearn.__version__)[:2]) >= (1, 6):
+        sk_version = tuple(int(x) for x in re.findall(r"\\d+", sklearn.__version__)[:2])
+        if sk_version >= (1, 4):
+            problems.append("scikit-learn 1.4 or later: `OneHotEncoder(sparse=False)` no longer exists (see the README)")
+        if sk_version >= (1, 6):
             problems.append("scikit-learn 1.6 or later: `squared=False` no longer exists (see the README)")
         print("\\nEnvironment ready." if not problems else "\\nTo fix: " + "; ".join(problems))
         """),

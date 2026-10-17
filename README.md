@@ -95,6 +95,8 @@ environment with them). The numbers quoted in the lessons and in "What you learn
 they may differ slightly, which does not mean your code is wrong.
 
 **Compatibility.** The code is written and verified with Python 3.8, scikit-learn 1.1, pandas 1.5 and xgboost 1.6.
+- With scikit-learn 1.4 or later `OneHotEncoder(sparse=False)` no longer exists (it was renamed `sparse_output=False` in 1.2): the notebooks of
+  module 2 and the exercises that use it fail with a `TypeError`. Use scikit-learn 1.1 to 1.3, or replace `sparse=` with `sparse_output=`.
 - With scikit-learn 1.6 or later the `squared=False` parameter of `mean_squared_error` no longer exists: replace it with
   `root_mean_squared_error`.
 - With XGBoost 2.x it has not been tried: the checks of module 9 are written as relations (X is smaller than Y) and not
