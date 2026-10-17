@@ -3,6 +3,7 @@
 You don't need it to study: it exists to produce lessons, exercises and solutions in a consistent way
 from compact specifications (see the `content/` folder).
 """
+import re
 import textwrap
 from pathlib import Path
 from typing import Any, Dict, Optional, Sequence, Tuple, Union
@@ -55,7 +56,15 @@ def _clean(text: str) -> str:
 
 
 def M(text: str) -> Cell:
-    """Markdown cell specification (the text is dedented)."""
+    """Markdown cell specification (the text is dedented).
+
+    A cell can end with a `details(...)` block, which is already at column 0: dedenting the whole string would then do
+    nothing and the text before it would keep its indentation (rendered as a code block). So only the part before the
+    first <details> is dedented.
+    """
+    head, separator, tail = text.partition("<details>")
+    if separator:
+        text = textwrap.dedent(head) + separator + tail
     return ("md", _clean(text), None)
 
 
@@ -64,11 +73,27 @@ def C(text: str, tag: Optional[str] = None) -> Cell:
     return ("code", _clean(text), tag)
 
 
+CLICK_NOTE = "> *Click on a question to show its answer.*"
+
+
+def _with_click_note(text: str) -> str:
+    """Markdown cells with collapsed answers (<details>) get a one-line note, right under the last heading before the
+    first <details>, saying that you click on a question to open it."""
+    if "<details>" not in text or CLICK_NOTE in text:
+        return text
+    before, separator, after = text.partition("<details>")
+    lines = before.rstrip("\n").split("\n")
+    headings = [i for i, line in enumerate(lines) if re.match(r"#{1,6} ", line)]
+    at = headings[-1] + 1 if headings else len(lines)       # no heading: the note goes just before the first <details>
+    lines[at:at] = ["", CLICK_NOTE]
+    return "\n".join(lines).lstrip("\n") + "\n\n" + separator + after
+
+
 def _cells(specs: Sequence[Cell]) -> list:
     """Turn cell specifications into nbformat cells."""
     cells = []
     for kind, text, tag in specs:
-        cell = new_markdown_cell(text) if kind == "md" else new_code_cell(text)
+        cell = new_markdown_cell(_with_click_note(text)) if kind == "md" else new_code_cell(text)
         if tag:
             cell.metadata["tags"] = [tag]
         cells.append(cell)
