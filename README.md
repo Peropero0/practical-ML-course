@@ -15,6 +15,8 @@ If you find it useful and would like to support the project, you can support its
 
 **[Read my Medium articles → https://medium.com/@lu.battistoni]**
 
+**[Reach me on LinkedIn → https://www.linkedin.com/in/luigi-battistoni/]**
+
 
 ## About the course
 
