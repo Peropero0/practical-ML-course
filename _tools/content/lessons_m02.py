@@ -48,7 +48,7 @@ def lesson_2_1() -> List[Cell]:
         """),
         _setup("""
         from scipy import stats
-        from sklearn.preprocessing import (MaxAbsScaler, MinMaxScaler, PowerTransformer, QuantileTransformer,
+        from sklearn.preprocessing import (MinMaxScaler, PowerTransformer, QuantileTransformer,
                                            RobustScaler, StandardScaler)
 
         df = ds.loans(with_missing=False)
@@ -293,7 +293,7 @@ def lesson_2_3() -> List[Cell]:
         num = df[["age", "income", "job_tenure", "amount"]]
         for name, imp in [("mean", SimpleImputer(strategy="mean")), ("median", SimpleImputer(strategy="median")),
                           ("with indicator", SimpleImputer(strategy="median", add_indicator=True)),
-                          ("KNN", KNNImputer(n_neighbors=5))]:
+                          ("KNN", KNNImputer(n_neighbors=5)), ("iterative", IterativeImputer(random_state=0))]:
             Z = imp.fit_transform(num)
             print(f"{name:15s} shape {Z.shape} | remaining nan {int(np.isnan(Z).sum())}")
         """),

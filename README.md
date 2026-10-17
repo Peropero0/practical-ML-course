@@ -99,8 +99,11 @@ they may differ slightly, which does not mean your code is wrong.
   module 2 and the exercises that use it fail with a `TypeError`. Use scikit-learn 1.1 to 1.3, or replace `sparse=` with `sparse_output=`.
 - With scikit-learn 1.6 or later the `squared=False` parameter of `mean_squared_error` no longer exists: replace it with
   `root_mean_squared_error`.
-- With XGBoost 2.x it has not been tried: the checks of module 9 are written as relations (X is smaller than Y) and not
-  as exact values, but small adjustments may be needed (for example to the `fit`/`predict` parameters).
+- With XGBoost 2.x and 3.x the lessons 9.1 to 9.3 run without errors (tried with 2.1 and 3.4). The exercises and solutions of module 9 were not
+  tried: their checks are written as relations (X is smaller than Y) and not as exact values, but small adjustments may be needed.
+- With `requirements.txt` (the loose versions) all the lessons were run without errors on Python 3.9 and 3.12 (scikit-learn 1.3, pandas up to 3.0).
+  Exercises and solutions were tested only with Python 3.8 and the lock file. scikit-learn 1.3 has no ready-made packages for Python 3.13 or later:
+  use Python 3.8 to 3.12, or Docker.
 - The time measurements (module 9, F1) depend on the machine: the checks verify the ratios, not the seconds.
 
 

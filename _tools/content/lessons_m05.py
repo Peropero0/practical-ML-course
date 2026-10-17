@@ -216,8 +216,7 @@ def lesson_5_3() -> List[Cell]:
         """),
         _setup("""
         import time
-        from sklearn.impute import KNNImputer
-        from sklearn.model_selection import GridSearchCV, StratifiedKFold, train_test_split, validation_curve
+        from sklearn.model_selection import StratifiedKFold, validation_curve
         from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
         from sklearn.pipeline import make_pipeline
         from sklearn.preprocessing import StandardScaler
@@ -240,7 +239,7 @@ def lesson_5_3() -> List[Cell]:
             print(f"{d:2d} dimensions, 30000 training examples, 1000 predictions: " + " | ".join(row))
         """),
         M("""
-        With 3 dimensions the tree is much faster than the exhaustive computation (about 5 times); with 30 it becomes **a disadvantage** (over twenty times slower: building and visiting the tree costs more than the direct comparison). The default (`algorithm="auto"`) chooses for you.
+        With 3 dimensions the tree is much faster than the exhaustive computation (about 5 times); with 30 it becomes **a disadvantage** (over twenty times slower: building and visiting the tree costs more than the direct comparison). The times depend on your machine: look at the ratios, not at the seconds. The default (`algorithm="auto"`) chooses for you.
         It is also the reason why a KNN in production with millions of examples becomes a problem of **approximate search** (ANN indexes), not of scikit-learn.
 
         ## Choosing `k`

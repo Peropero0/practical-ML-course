@@ -47,7 +47,7 @@ def lesson_7_1() -> List[Cell]:
         _setup("""
         from sklearn.datasets import load_breast_cancer
         from sklearn.model_selection import train_test_split
-        from sklearn.tree import DecisionTreeClassifier, export_text, plot_tree
+        from sklearn.tree import DecisionTreeClassifier, export_text
 
         data = load_breast_cancer()
         X_tr, X_te, y_tr, y_te = train_test_split(data.data, data.target, test_size=0.3, stratify=data.target, random_state=0)
@@ -155,13 +155,27 @@ def lesson_7_2() -> List[Cell]:
         full_tree = DecisionTreeClassifier(random_state=0).fit(X_tr, y_tr)
         path = full_tree.cost_complexity_pruning_path(X_tr, y_tr)
         print("candidate alpha values:", len(path.ccp_alphas))
-        chosen = path.ccp_alphas[::max(1, len(path.ccp_alphas) // 8)]
+        alphas = path.ccp_alphas[:-1]                                      # the last alpha prunes everything down to the root
+        chosen = alphas[np.unique(np.linspace(0, len(alphas) - 1, 12).astype(int))]
+        rows = []
         for a in chosen:
-            t = DecisionTreeClassifier(random_state=0, ccp_alpha=a).fit(X_tr, y_tr)
-            print(f"alpha {a:.5f} | leaves {t.get_n_leaves():4d} | train {t.score(X_tr, y_tr):.3f} | test {t.score(X_te, y_te):.3f}")
+            t = DecisionTreeClassifier(random_state=0, ccp_alpha=a)
+            scores = cross_val_score(t, X_tr, y_tr, cv=cv)                 # the choice is made with the training set only
+            rows.append({"alpha": a, "leaves": t.fit(X_tr, y_tr).get_n_leaves(), "train": t.score(X_tr, y_tr), "CV mean": scores.mean(), "CV std": scores.std()})
+        table = pd.DataFrame(rows).set_index("alpha")
+        print(table.round(3))
+
+        best = table["CV mean"].idxmax()
+        limit = table.loc[best, "CV mean"] - table.loc[best, "CV std"] / np.sqrt(5)        # one standard error (std / sqrt of the 5 folds)
+        simplest = table[table["CV mean"] >= limit].index.max()                           # the largest alpha that is still within the limit
+        final = DecisionTreeClassifier(random_state=0, ccp_alpha=simplest).fit(X_tr, y_tr)
+        print(f"best alpha {best:.5f} ({table.loc[best, 'leaves']} leaves) | limit {limit:.3f} | simplest within the limit: alpha {simplest:.5f} ({final.get_n_leaves()} leaves)")
+        print(f"test accuracy (opened once): chosen tree {final.score(X_te, y_te):.3f} | tree without limits {full.score(X_te, y_te):.3f}")
         """),
         M("""
-        With `alpha = 0` the tree is complete; as `alpha` grows the leaves shrink in number and the gap between train and test closes, down to a tiny tree. Here too the best value is chosen with cross-validation, and the rule "the simplest within one standard error of the best" is worth using.
+        With `alpha = 0` the tree is complete; as `alpha` grows the leaves shrink in number and the training score falls, while the cross-validated score rises (0.767 with 124 leaves, 0.817 with 22), stays there with 12 leaves and collapses when the pruning goes too far (0.739 with 2 leaves).
+        The best value is chosen with cross-validation, never with the test set, and the rule "the simplest tree within one standard error of the best" is worth using: the best alpha has 22 leaves, the limit is 0.808 and the simplest tree above it has 12 leaves.
+        (Here the standard error is approximated by the standard deviation across folds divided by $\\sqrt{5}$; as seen in lesson 3.2 it is only an indicator.) Only now is the test set opened, once: 0.788 against 0.730 for the tree without limits.
 
         ## Unstable trees
 

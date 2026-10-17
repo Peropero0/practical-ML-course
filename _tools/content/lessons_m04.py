@@ -160,8 +160,8 @@ def lesson_4_2() -> List[Cell]:
         _setup("""
         from sklearn.datasets import load_breast_cancer, load_digits
         from sklearn.linear_model import LogisticRegression
-        from sklearn.metrics import accuracy_score, roc_auc_score
-        from sklearn.model_selection import cross_val_score, train_test_split
+        from sklearn.metrics import roc_auc_score
+        from sklearn.model_selection import train_test_split
         from sklearn.pipeline import make_pipeline
         from sklearn.preprocessing import StandardScaler
 

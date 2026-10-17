@@ -343,7 +343,7 @@ E3 = dict(
         """),
     ],
     learned="""
-        - **A model that memorizes the training set makes any column "important":** on the training set the forest has AUC 1.0 and the permutation of `ticket_code` (a random integer) removes 0.02 of AUC, more than `age`; on the test set the same column is worth 0.014 and the ranking changes (and `random_number` drops to −0.003).
+        - **A model that memorizes the training set makes any column "important":** on the training set the forest has AUC 1.0 and the permutation of `ticket_code` (a random integer) removes 0.02 of AUC, more than `age`; on the test set the same column is worth 0.013 and the ranking changes (and `random_number` drops to −0.003).
         - **Any permutation importance must be computed on unseen data** (test set, validation, or on the OOB with implementations that support it): the training set contains the memory of the model, not its ability to generalize. It holds for the permutation, for the drop-column, for SHAP: compute them on validation data.
         - With a "large" deep forest the phenomenon is stronger the more the model memorizes: it is another reason to use a higher `min_samples_leaf`, which makes the training set less perfect (and the importances on the training set less distorted).
         - **A cheap check:** add two random columns (a continuous one, one with many integer values) to your dataset and check where they end up in the ranking. If a real feature is **below** the random columns, its importance cannot be distinguished from noise.

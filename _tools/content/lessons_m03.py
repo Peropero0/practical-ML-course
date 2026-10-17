@@ -249,6 +249,8 @@ def lesson_3_2() -> List[Cell]:
 
         > **Rule of thumb.** Ask yourself "how will this model be used?" and build the splitter so that the validation imitates it:
         > new customers → groups by customer; future → temporal order; rare classes → stratification.
+
+        > **Common mistake.** Reading a cross-validation score as the quality of the model without asking whether the folds look like the real use of the model. With repeated patients or a time order, the random `KFold` above gave R² 0.75 and 0.97 where the right splitters gave -0.77 and 0.23.
         """),
         M("## Check your understanding\n\n" + details(
             "Why is `return_train_score=True` useful?",
@@ -335,6 +337,17 @@ def lesson_3_3() -> List[Cell]:
         With many hyperparameters the grid explodes: 5 values for 6 parameters are 15,625 combinations. `RandomizedSearchCV` samples a
         fixed number (`n_iter`) from distributions, much more efficient when only a few parameters really matter. For
         parameters that vary by orders of magnitude you sample on a logarithmic scale (`loguniform`).
+        """),
+        C("""
+        pipe_lr = make_pipeline(prep, LogisticRegression(max_iter=2000))
+        search_c = RandomizedSearchCV(pipe_lr, {"logisticregression__C": loguniform(1e-3, 1e2)}, n_iter=12, cv=cv, scoring="roc_auc", random_state=0).fit(X_tr, y_tr)
+        tried = search_c.cv_results_["param_logisticregression__C"].astype(float)
+        print("values of C tried:", np.sort(tried).round(4))
+        print("best C:", round(search_c.best_params_["logisticregression__C"], 4), "| best_score_", round(search_c.best_score_, 3))
+        """),
+        M("""
+        The 12 values of `C` are spread over several orders of magnitude (from 0.08 to 66), a few in every decade: that is what `loguniform` does. A uniform distribution between 0 and 100 would put nine values out of ten above 10
+        and would almost never try the small values, where the best one is here (0.44). With several hyperparameters, `RandomizedSearchCV` does the same for each of them.
         """),
         C("""
         pipe_rf = make_pipeline(prep, RandomForestClassifier(random_state=0))

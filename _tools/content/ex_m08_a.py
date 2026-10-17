@@ -118,7 +118,7 @@ A1 = dict(
     learned="""
         - **Bagging is a three-line loop:** sample with replacement, tree, vote. A single tree without limits gets 0.775; the vote of 100 trees 0.845: 7 points gained **without changing the tree algorithm**, just by averaging its variance.
         - **A bootstrap contains 63.2% of distinct examples** ($1 - 1/e$): the remaining 36.8% is the out-of-bag set of that tree. With 100 trees the probability that an example is "inside" in all of them is tiny, so almost all of them receive at least one OOB prediction.
-        - **The OOB error is a free honest estimate:** 0.86 against 0.85 on the test set, much closer to reality than the training accuracy (almost 1.0). Every OOB prediction uses only the trees that have never seen that example, so it is a piece of validation built into the training.
+        - **The OOB error is a free honest estimate:** 0.862 against 0.845 on the test set, much closer to reality than the training accuracy (almost 1.0). Every OOB prediction uses only the trees that have never seen that example, so it is a piece of validation built into the training.
         - The random forest adds only one thing to bagging: at **every split** the tree can choose only among a random subset of features. It serves to decorrelate the trees (A2).
     """,
     pitfall="""

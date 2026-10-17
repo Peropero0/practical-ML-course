@@ -236,7 +236,23 @@ def lesson_8_3() -> List[Cell]:
         ## Regression and limits
 
         `RandomForestRegressor` predicts the average of the leaf means: robust, no scaling, it handles interactions. But it is a **piecewise constant** function and outside the range of the data **it is flat** (like the single tree, M7 C1).
-
+        """),
+        C("""
+        rng = np.random.default_rng(0)
+        x = rng.uniform(0, 6, 300)
+        y_reg = np.sin(x) + 0.3 * x + rng.normal(0, 0.2, 300)             # trained only on x between 0 and 6
+        reg = RandomForestRegressor(200, min_samples_leaf=3, random_state=0, n_jobs=-1).fit(x.reshape(-1, 1), y_reg)
+        trend = lambda v: np.sin(v) + 0.3 * v
+        for name, grid in {"inside the training range": np.linspace(0.5, 5.5, 50), "outside it (6.5 to 12)": np.linspace(6.5, 12, 50)}.items():
+            print(f"{name:26s} mean absolute error against the true trend: {np.abs(reg.predict(grid.reshape(-1, 1)) - trend(grid)).mean():.2f}")
+        new_x = np.array([6.5, 8.0, 12.0])
+        print(pd.DataFrame({"x": new_x, "true trend": trend(new_x), "forest": reg.predict(new_x.reshape(-1, 1))}).round(2).to_string(index=False))
+        """),
+        M("""
+        Inside the range the forest follows the trend closely (mean error 0.06). Outside it the prediction freezes at 1.47, the average of the last leaves, and the error is 1.32 and grows with the distance: the forest does not continue the trend.
+        If the data have a trend and you must predict beyond the range you trained on, use a model that extrapolates, or remove the trend first and let the forest model what is left.
+        """),
+        M("""
         ## Cost
 
         A forest with hundreds of deep trees takes up memory (here 11 MB for 100 trees on 15,000 rows, and it grows with the rows: hundreds of MB on large datasets) and prediction requires going through all the trees. To serve the model in real time the number of trees, the depth and the minimum leaf size are cost levers, as well as accuracy levers: with a minimum leaf of 20 the model weighs 3 MB and loses a single point (0.955 → 0.942).

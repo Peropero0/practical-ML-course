@@ -128,7 +128,7 @@ def lesson_9_2() -> List[Cell]:
         _setup("""
         import xgboost as xgb
         from sklearn.datasets import make_classification
-        from sklearn.metrics import log_loss, roc_auc_score
+        from sklearn.metrics import roc_auc_score
         from sklearn.model_selection import train_test_split
 
         X, y = make_classification(4000, n_features=12, n_informative=5, class_sep=0.8, flip_y=0.08, random_state=0)

@@ -188,7 +188,7 @@ def lesson_6_2() -> List[Cell]:
         The explained variance measures the fidelity of the **reconstruction**, not the ability to discriminate the classes. Components with little variance can contain the information the target needs (C1). That is why thresholds on the variance are a starting point to
         explore, not a selection criterion.
 
-        > **Common mistake.** Choosing `k` by looking at the explained variance on the whole dataset and then evaluating the model in cross-validation with that `k`: PCA was learned on the validation folds too. Put PCA in the `Pipeline` and search `k` with `GridSearchCV`.
+        > **Common mistake.** Fitting the PCA on the whole dataset and then cross-validating only the model that follows: the validation folds already took part in finding the components. It is a mild leak (PCA does not see `y`), but it is a leak, and it makes the estimate optimistic. Put PCA in the `Pipeline` and search `k` with `GridSearchCV`.
 
         ## Check your understanding
 
@@ -222,7 +222,6 @@ def lesson_6_3() -> List[Cell]:
         from sklearn.model_selection import cross_val_score, StratifiedKFold
         from sklearn.neighbors import KNeighborsClassifier
         from sklearn.pipeline import make_pipeline
-        from sklearn.preprocessing import StandardScaler
 
         X, y = load_digits(return_X_y=True)
         cv = StratifiedKFold(5, shuffle=True, random_state=0)

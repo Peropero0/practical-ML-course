@@ -113,7 +113,7 @@ B1 = dict(
     learned="""
         - **A tree without limits memorizes:** cross-validation AUC 0.72 against 0.85 with `max_depth=3`. It is not a flaw of the algorithm, it is its nature: without a stopping criterion it builds a leaf for each group of examples. The regularization parameters (`max_depth`, `min_samples_leaf`, `ccp_alpha`)
           are not optional.
-        - **The best tree is small:** the search picks depth 3, with no other constraints, with test AUC 0.86 and **8 leaves**. With very few parameters a tree gets performance close to much more complex models, and it is readable.
+        - **The best tree is small:** the search picks depth 4, with no other constraints, with test AUC 0.87 and **15 leaves** (depth 3 is only 0.002 behind in cross-validation, with fewer leaves). With very few parameters a tree gets performance close to much more complex models, and it is readable.
         - **The encoding of the categoricals (one-hot or ordinal) matters little** with `max_depth=3`: the tree chooses thresholds and the one-hot makes them explicit. With many levels the one-hot fragments the data and the ordinal encoding (with a sensible order) is more efficient.
         - **The rules are the product**: the root is the most informative question (`sex`/`title`: "women and children first"), and in three or four levels you read the rules that explain almost the whole prediction. It is the reason a single tree still makes sense when you need to explain.
     """,

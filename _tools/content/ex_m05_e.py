@@ -264,14 +264,14 @@ E3 = dict(
     id="E3", slug="normalizer_instead_of_standardscaler", kind="E", level=2, minutes=35, module=MODULE, start="must_fail",
     title="Normalizer is not a scaler: it normalizes the rows, not the columns",
     goal="""
-        Find out why a KNN on the wines with `Normalizer` "to bring everything onto the same scale" gets 0.80 instead of 0.96: `Normalizer` divides **every row** by its length, erases the magnitude of the samples and does not touch the relative scales of the columns.
+        Find out why a KNN on the wines with `Normalizer` "to bring everything onto the same scale" gets 0.79 instead of 0.96: `Normalizer` divides **every row** by its length, erases the magnitude of the samples and does not touch the relative scales of the columns.
         Replace it with `StandardScaler` and understand when `Normalizer` is instead the right choice.
     """,
     dataset="""
         `load_wine`: 178 wines, 13 measurements (`proline` has a scale of hundreds, `hue` of 1), 3 classes. Validation: `StratifiedKFold(5, shuffle=True, random_state=0)`.
     """,
     purpose="""
-        Tell apart two transformations that the name makes you confuse: **scaler** (per column, learned from the training set) and `Normalizer` (per row, stateless). And recognize that "no error and accuracy 0.80" is not a result to accept without a baseline.
+        Tell apart two transformations that the name makes you confuse: **scaler** (per column, learned from the training set) and `Normalizer` (per row, stateless). And recognize that "no error and accuracy 0.79" is not a result to accept without a baseline.
     """,
     task=[
         "Run the colleague's cell: `bug_acc` (KNN with `Normalizer`). Also compute `no_transform_acc` (KNN without transformations) and `std_acc` (with `StandardScaler`): did the colleague improve anything compared to doing nothing?",
@@ -356,9 +356,9 @@ E3 = dict(
     learned="""
         - `Normalizer` **is not a scaler**: it divides every row by its norm. It is useful when the **direction** of the vector matters and not the length (word frequencies in documents of different length, histograms, cosine similarity): two documents
           equal except for a factor 2 (one long, one short) become identical. In the wines the length is information: a wine with more of everything is different from one with less of everything.
-        - **The columns do not end up on the same scale**: after `Normalizer` the variability of `proline` disappears (it is almost always 1) and the dominant column becomes `magnesium`, with a standard deviation more than a hundred times that of the least variable column. The result (0.80) is far below that of the scaler (0.96) and only a little better than doing nothing (0.69).
+        - **The columns do not end up on the same scale**: after `Normalizer` the variability of `proline` disappears (it is almost always 1) and the dominant column becomes `magnesium`, with a standard deviation more than a hundred times that of the least variable column. The result (0.787) is far below that of the scaler (0.955) and only a little better than doing nothing (0.662).
         - The name is misleading: `StandardScaler` and `MinMaxScaler` transform the **columns** with training statistics; `Normalizer` transforms the **rows** without learning anything (`fit` does nothing) and the pipeline treats it like any other step.
-        - The warning sign was "0.80 on a dataset where a scaled KNN gets 0.96": you discover it only by comparing with **a correct baseline**. When a preprocessing "improves" a result, always ask yourself compared to what.
+        - The warning sign was "0.79 on a dataset where a scaled KNN gets 0.96": you discover it only by comparing with **a correct baseline**. When a preprocessing "improves" a result, always ask yourself compared to what.
     """,
     pitfall="""
         Choosing a transformer by its name ("normalize": so it brings everything to the same scale) without reading what it does. In scikit-learn "normalize" always means "bring the norm of the row to 1", which is different from standardizing.

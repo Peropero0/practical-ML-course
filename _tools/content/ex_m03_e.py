@@ -43,7 +43,7 @@ E1 = dict(
         it needs more data" and then you evaluate on a part that the search has already seen.
     """,
     task=[
-        "Run the colleague's cell: `auc_bug` is very high (about 0.95) and well above the `best_score_` of its own search (about 0.87).",
+        "Run the colleague's cell: `auc_bug` is very high (about 0.95) and well above the `best_score_` of its own search (about 0.86).",
         "Compute `test_share_in_training`: the fraction of rows of `X_te` that also appear in the `X` the search trained on (index). Is it 1?",
         "Fix it: run the search **only** on `X_tr, y_tr` and evaluate once on `X_te`. Save `auc_ok` and `best_ok` (the `best_score_` of the correct search).",
         "Save `inflation = auc_bug − auc_ok`: by how much the colleague's method overestimates the performance.",
@@ -110,7 +110,7 @@ E1 = dict(
           an unregularized random forest memorizes it (AUC close to 1).
         - The correct scheme has three sets with distinct roles: **training** (the search does its cross-validation inside), **test** (a single
           final evaluation), and the inner folds (disposable). The test set must not influence anything, not even the choice of hyperparameters.
-        - A symptom of this bug is a score that is "too good": AUC 0.95 on the test set when the cross-validation says 0.87 (and the honest AUC is 0.88) is a warning sign. Comparing
+        - A symptom of this bug is a score that is "too good": AUC 0.95 on the test set when the cross-validation says 0.86 (and the honest AUC is 0.88) is a warning sign. Comparing
           the test score with `best_score_` and with the baseline is the cheapest check.
     """,
     pitfall="""
